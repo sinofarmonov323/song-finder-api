@@ -4,3 +4,4 @@ beautifulsoup4
 uvicorn
 pyacoustid
 pytubefix
+jinja2
