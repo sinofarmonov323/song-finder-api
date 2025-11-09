@@ -5,3 +5,4 @@ uvicorn
 pyacoustid
 pytubefix
 jinja2
+python-multipart
