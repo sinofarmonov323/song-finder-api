@@ -1,6 +1,6 @@
 fastapi
 requests
 beautifulsoup4
-spotipy
-youtube-search-python
 uvicorn
+pyacoustid
+pytubefix
