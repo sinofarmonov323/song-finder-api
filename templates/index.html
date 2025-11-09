@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Song Finder API</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  background: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  background: #222;
+  color: #fff;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.hero {
+  background: #007bff;
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.hero .btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: white;
+  color: #007bff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.usage {
+  background: white;
+  padding: 60px 20px;
+}
+
+.usage h2 {
+  margin-bottom: 20px;
+  color: #007bff;
+}
+
+.usage pre {
+  background: #f1f1f1;
+  padding: 15px;
+  border-left: 4px solid #007bff;
+  overflow-x: auto;
+}
+
+footer {
+  background: #222;
+  color: #ccc;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 2300px;
+}
+
+#usage {
+  height: 460px;
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Song Finder API</h1>
+      <p>Download songs and songs' clips and subtitles easily via API</p>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="container">
+      <h2>Simple. Fast.</h2>
+      <p>Use our REST API to download a lots of songs, clips and subtitles</p>
+      <a href="#usage" class="btn">Learn How</a>
+    </div>
+  </section>
+
+  <section id="usage" class="usage">
+    <div class="container">
+      <h2>How to Use?</h2>
+      <br>
+      <a href="/docs">swagger UI is here</a>
+      <h1>Search Songs</h1>
+      <pre>
+        <h1>GET</h1>
+        /search-songs?query[song name]&token=YOUR_TOKEN&limit=[number of songs you want to get] <br>
+        example: /search-songs?query=daylight&token=TOKEN&limit=10
+      </pre>
+      <pre>
+        <h1>Output</h1>
+        [{
+          "song_id": "12345678901012131314151617181920",
+          "images": ["image-url-1", "image-url-2"],
+          "title": "song full title"
+        }]
+      </pre>
+      <br>
+      <h1>Download song by id</h1>
+      <pre>
+        <h1>GET</h1>
+        /download-song-by-id?id=[song id that you get from /search-songs page]<br>
+        example: /download-song-by-id?id=380750890760670080911221380760840
+        </pre>
+        <pre>
+          <h1>Output</h1>
+          you will get listenable song. You will get the Content-Type from headers, most often it is webm
+      </pre>
+      <br>
+      <h1>Get song's subtitles</h1>
+      <pre>
+        <h1>GET</h1>
+        /get-subtitles/[song id]<br>
+        example: /get-subtitles/380750890760670080911221380760840
+        </pre>
+        <pre>
+          <h1>Output</h1>
+          [{'en': "song lyrics", "fr": "song lyrics in french"...}]
+      </pre>
+      <br>
+      <h1>Get Song's clip</h1>
+      <pre>
+        <h1>POST</h1>
+        /get-clip/[song id]<br>
+        example: /get-clip/380750890760670080911221380760840 (POST method only)
+        </pre>
+        <pre>
+          <h1>Output</h1>
+          {
+            "mime_type": "video/mp4",
+            "url": "https://songfinder.alwaysdata.net/download-clip/download/UFRCVVZYY3dSV0pPVG1wWlNFWlVZbFprUlZwWlJqRk5XakZYVmxVMWExWldjRWhhZFZaSFZHOW9i..."
+          }
+      </pre>
+      <br>
+      <h1>Recognize Song from audio</h1>
+      <pre>
+        <h1>GET</h1>
+        /recognize (send the audio as file)<br>
+        example code in python: requests.get("http://127.0.0.1:5000/recognize", files={"audio": open("skyfall.mp3", 'rb')}) (in {"audio": open("skyfall.mp3", 'rb')} you have to use 'audio' word)
+        hint: ask chatgpt or any AI like LLM to convert this into the programming language you know if you don't know how to wirte this in the programming languge you want use
+      </pre>
+      <pre>
+        <h1>Output</h1>
+        {
+          "results": [
+            "id": "523981e5-0...",
+            "recordings": [
+              "artists": [
+                {
+                  "id": "073dae8a-4...",
+                  "joinphrase": "...",
+                  "name": "Eminem"
+                },
+                ...
+              ]
+            ]
+          ]
+        }
+      </pre>
+    </div>
+  </section>
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Song Finder API.</p>
+      <p>📫 Contact on <a href="https://t.me/jackson_rodger" style="color: white;">telegram</a></p>
+    </div>
+  </footer>
+</body>
+</html>
