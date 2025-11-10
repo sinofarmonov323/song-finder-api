@@ -45,21 +45,17 @@ async def log_ip(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Token verification
 def verify_token(token: str):
     return token == "TGnwkZgAfHdAe5oHOPXgF2JyRj4ZKblZBZrbOZVW2abgwrRPXK"
 
-# Homepage
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Count users
 @app.get("/users", include_in_schema=False)
 async def send_users():
     return JSONResponse(len(users_ip))
 
-# See all users IPs
 @app.get("/512448256112", include_in_schema=False)
 async def see_users():
     return JSONResponse({"users_ip": list(users_ip)})
@@ -73,7 +69,6 @@ async def search_from_youtube(query: str = None, token: str = None, limit: int =
     if not verify_token(token):
         raise HTTPException(status_code=401, detail="token muddati tugadi")
     
-    # Cleanup
     for pattern in ["*.mp4", "*.m4a"]:
         for file in glob.glob(pattern):
             try:
@@ -90,7 +85,6 @@ async def search_from_youtube(query: str = None, token: str = None, limit: int =
                    for thumb in data['thumbnails']]
     } for data in datas])
 
-# Download song by ID
 @app.get("/download-song-by-id", tags=['Song Finder'])
 async def download_songs_by_video_id(id: str = None):
     if not id:
@@ -108,13 +102,12 @@ async def download_songs_by_video_id(id: str = None):
         audio = YouTubeSongDownloader(full_url)
         return FileResponse(
             audio['path'],
-            media_type=audio['type'],
-            filename=f"song.{audio['type'].split('/')[-1]}"
+            media_type="audio/m4a",
+            filename="song.m4a"
         )
     else:
         raise HTTPException(status_code=404, detail="invalid id")
 
-# Get subtitles
 @app.get("/get-subtitles/{id}", tags=['Song Finder'])
 async def send_subtitles(id: str):
     url = f"https://www.youtube.com/watch?v={decryptor(id)}"
@@ -124,7 +117,6 @@ async def send_subtitles(id: str):
     else:
         raise HTTPException(status_code=response.status_code, detail="Error fetching subtitles")
 
-# Get clip
 @app.get("/get-clip/{id}", tags=['Song Finder'])
 async def send_clip(id: str):
     url = f"https://www.youtube.com/watch?v={decryptor(id)}"
@@ -132,17 +124,15 @@ async def send_clip(id: str):
     if response.ok:
         data = GetSongClip(url)
         encoded_url = base64_encoder(base64_encoder(data['url'])[::-1])
-        return {"url": f"https://songfinder.alwaysdata.net/download-clip/download/{encoded_url}", "mime_type": data['type']}
+        return {"url": f"https://song-finder-api.onrender.com/download-clip/download/{encoded_url}", "mime_type": data['type']}
     else:
         raise HTTPException(status_code=response.status_code, detail="Error fetching clip")
 
-# Download clip now
 @app.post("/download-clip/download/{url}", include_in_schema=False)
 async def send_clip_now(url: str):
     rr_url = base64_decoder(base64_decoder(url)[::-1])
     return RedirectResponse(rr_url)
 
-# Download thumbnail
 @app.get("/download-image/{thumb}", tags=['Song Finder'])
 async def download_thumbnail(thumb: str):
     thumb_url = f"https://i.ytimg.com/{base64_decoder(thumb)}"
@@ -158,7 +148,6 @@ async def download_thumbnail(thumb: str):
     else:
         raise HTTPException(status_code=404, detail="Thumbnail not found")
 
-# Recognize song
 @app.post("/recognize", tags=['Song Finder'])
 async def song_recognizer(audio: UploadFile = File(...)):
     if not audio:
@@ -174,7 +163,6 @@ async def song_recognizer(audio: UploadFile = File(...)):
 
     return JSONResponse({'result': json.loads(result)})
 
-# Custom error handlers
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
     return JSONResponse({"error": "Endpoint not found"}, status_code=404)

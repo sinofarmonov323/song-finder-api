@@ -86,8 +86,7 @@ def generate_token(length):
 
 def YouTubeSongDownloader(url: str):
     yt = YouTube(url)
-    data = yt.streams.get_audio_only(subtype="webm")
-    yt.streams.get_highest_resolution().download()
+    data = yt.streams.get_audio_only(subtype="mp3") or yt.streams.get_audio_only()
     return {'path': data.download(), "type": data.mime_type}
 
 def encryptor(word: str):
@@ -180,3 +179,4 @@ def delete_m4a_files():
 # print(generate_token(50))
 
 # print(YouTubeSearch("Egzod & Maestro Chives feat. Neoni - Royalty"))
+print(YouTubeSongDownloader("https://youtu.be/s7-GTShjcqY?si=N2uPKEVcJFdesWbU"))
