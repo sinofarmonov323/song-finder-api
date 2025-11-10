@@ -10,6 +10,7 @@ import json
 import re
 from pytubefix import YouTube
 import acoustid
+import requests
 
 
 def get_fingerprint(file_path):
@@ -85,9 +86,40 @@ def generate_token(length):
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
 
 def YouTubeSongDownloader(url: str):
-    yt = YouTube(url)
-    data = yt.streams.get_audio_only(subtype="mp3") or yt.streams.get_audio_only()
-    return {'path': data.download()}
+    response = None
+    try:
+        yt = YouTube(url)
+        data = yt.streams.get_audio_only(subtype="mp3") or yt.streams.get_audio_only()
+        return {'path': data.download()}
+    except:
+        print("Using second downloader")
+        try:
+            response = requests.get(f"https://youtube-downloader-api-beta.vercel.app/youtubedownloader3?url={url}&token=1E10oZfm2ArLitixlYxgWNyKJcMrMfNYetxPurbJapItKC21f3").json()
+            audio = requests.get(response['audio'], stream=True)
+            filename = f"song.{audio.headers.get('Content-Type', "audio/m4a").split("/")[1]}"
+            with open(filename, "wb") as file:
+                print("writing to a file")
+                for chunk in audio.iter_content(8192):
+                    if chunk:
+                        file.write(chunk)
+            return {'path': filename}
+        except:
+            print("Using third downloader")
+            response = requests.get(f"https://youtube-downloader-api-beta.vercel.app/youtubedownloader?url={url}&token=1E10oZfm2ArLitixlYxgWNyKJcMrMfNYetxPurbJapItKC21f3").json()
+            try:
+                song = [video['url'] for video in response['video'] if video['mime_type'] == "audio/mp4"]
+                print(f"song: {song}")
+                stream = requests.get(song[0], stream=True)
+                print(f"Stream: {stream}")
+                with open(f"song.{stream.headers.get('Content-Type', "audio/m4a")}", "wb") as file:
+                    for chunk in stream.iter_content(8192):
+                        if chunk:
+                            file.write(chunk)
+                return {"path": "song.m4a"}
+            except:
+                print("Using fourth downloader")
+                response = requests.get(f"https://youtube-downloader-api-beta.vercel.app/youtubedownloader2?url={url}&token=1E10oZfm2ArLitixlYxgWNyKJcMrMfNYetxPurbJapItKC21f3")
+                return response.json()
 
 def encryptor(word: str):
     return "".join([str(ord(w)).zfill(3)[::-1] for w in word])

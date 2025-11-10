@@ -1,10 +1,3 @@
-# from fastapi import FastAPI, Request
-# import requests
-# from songfinder import YouTubeSearch, encryptor, decryptor, base64_encoder, base64_decoder, YouTubeSongDownloader, delete_m4a_files
-# from fastapi.middleware.cors import CORSMiddleware
-# from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
-
-
 import glob
 import json
 import os
@@ -24,7 +17,6 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -170,82 +162,3 @@ async def not_found(request: Request, exc):
 @app.exception_handler(500)
 async def internal_error(request: Request, exc):
     return JSONResponse({"error": "Internal server error"}, status_code=500)
-
-
-# app = FastAPI(
-#     title="Song Finder API",
-#     docs_url="/",
-#     redoc_url="/docs",
-#     description="admin is [here](https://t.me/jackson_rodger)",
-#     summary="API for song finding",
-# )
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# users_ip = set()
-
-# try:
-#     delete_m4a_files()
-# except:
-#     pass
-
-# @app.middleware("http")
-# async def middleware(request: Request, call_next):
-#     ip = request.client.host
-#     users_ip.add(ip)
-#     response = await call_next(request)
-#     return response
-
-# @app.get('/users', include_in_schema=False)
-# async def send_users():
-#     return len(users_ip)
-
-# def verify_token(token: str):
-#     if token == "PBFU1Br5ohd4Fg9CD2kumko6i3ZyzMa2MqEwwvCedQyMfqNUWG":
-#         return True
-#     return False
-
-# @app.get("/search-songs", tags=['Song Finder API'], name="Song finder API", description="API for song finding", response_class=JSONResponse)
-# async def search_from_youtube(query: str, token: str, limit: int):
-#     if verify_token(token):
-#         datas = YouTubeSearch(query, limit)
-#         return [{
-#             "title": data['title'],
-#             "song_id": encryptor(data['video_id']),
-#             "images": ["https://song-finder-api323.vercel.app/download-thumb/" + base64_encoder(thumb['url'].removeprefix("https://i.ytimg.com/")) for thumb in data['thumbnails']],
-#             } for data in datas]
-#     else:
-#         return {"error": "token muddati tugadi"}
-
-# @app.get("/download-songs-by-id", tags=['Song Finder API'], name="song downloader by song id", response_class=StreamingResponse)
-# async def download_songs_by_video_id(id: str, request: Request):
-#     full_url = f"https://www.youtube.com/watch?v={decryptor(id)}"
-#     response = requests.get(full_url)
-#     if response.status_code == 200:
-#         audio = YouTubeSongDownloader(full_url)
-#         return FileResponse(audio['path'], media_type=audio['type'])
-#     else:
-#         return {"message": "invalid id"}
-
-# @app.get("/download-thumb/{thumb}", tags=['Song Finder API'], name="search songs", include_in_schema=False, response_class=StreamingResponse)
-# async def download_thumbnail(thumb: str, request: Request):
-#     thumb = f"https://i.ytimg.com/{base64_decoder(thumb)}"
-#     print(thumb)
-#     headers = {
-#         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-#         "Referer": "https://www.youtube.com/",
-#         "Range": "bytes=0-"
-#     }
-#     response = requests.get(thumb, stream=True, headers=headers)
-#     ext = request.headers.get("Content-Type", "audio/jpg")
-#     return StreamingResponse(
-#         response.iter_content(chunk_size=1024),
-#         media_type=ext,
-#         headers={"Content-Disposition": f'inline; filename="thumbnail.{ext.split("/")[1]}"'}
-#     )
