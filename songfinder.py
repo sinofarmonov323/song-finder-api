@@ -87,7 +87,7 @@ def generate_token(length):
 def YouTubeSongDownloader(url: str):
     yt = YouTube(url)
     data = yt.streams.get_audio_only(subtype="mp3") or yt.streams.get_audio_only()
-    return {'path': data.download(), "type": data.mime_type}
+    return {'path': data.download()}
 
 def encryptor(word: str):
     return "".join([str(ord(w)).zfill(3)[::-1] for w in word])
